@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { Accelerometer } from "expo-sensors";
 
 export default function App() {
@@ -17,15 +17,12 @@ export default function App() {
   }, []);
 
   // --- INTELIGÊNCIA ANALÍTICA (CÁLCULO DO MAIOR EIXO) ---
-  // 1. Convertemos todos os valores para positivo usando Math.abs()
   const absX = Math.abs(leitura.x);
   const absY = Math.abs(leitura.y);
   const absZ = Math.abs(leitura.z);
 
-  // 2. Descobrimos qual é a maior magnitude bruta
   const maiorValor = Math.max(absX, absY, absZ);
 
-  // 3. Descobrimos qual eixo venceu para aplicar o indicador correto
   let eixoMaior = "";
   if (maiorValor === absX) {
     eixoMaior = "X";
@@ -34,26 +31,35 @@ export default function App() {
   } else {
     eixoMaior = "Z";
   }
-  // -----------------------------------------------------
+
+  // --- FUNÇÃO QUE FAZ O BOTÃO FUNCIONAR ---
+  const lidarComClique = () => {
+    Alert.alert("Sensor", `O maior eixo detectado agora é o ${eixoMaior}!`);
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Sensor Ativo</Text>
 
-      {/* Eixo X: Se for o maior, aplica o estilo 'destaque' e mostra o texto do indicador */}
+      {/* Eixo X */}
       <Text style={[styles.eixoX, eixoMaior === "X" && styles.destaque]}>
         Eixo X: {leitura.x.toFixed(2)} {eixoMaior === "X" && " ◀ MAIOR FORÇA"}
       </Text>
 
-      {/* Eixo Y: Se for o maior, aplica o estilo 'destaque' e mostra o texto do indicador */}
+      {/* Eixo Y */}
       <Text style={[styles.eixoY, eixoMaior === "Y" && styles.destaque]}>
         Eixo Y: {leitura.y.toFixed(2)} {eixoMaior === "Y" && " ◀ MAIOR FORÇA"}
       </Text>
 
-      {/* Eixo Z: Se for o maior, aplica o estilo 'destaque' e mostra o texto do indicador */}
+      {/* Eixo Z */}
       <Text style={[styles.eixoZ, eixoMaior === "Z" && styles.destaque]}>
         Eixo Z: {leitura.z.toFixed(2)} {eixoMaior === "Z" && " ◀ MAIOR FORÇA"}
       </Text>
+
+      {/* NOVO BOTÃO CUSTOMIZADO */}
+      <TouchableOpacity style={styles.botao} onPress={lidarComClique}>
+        <Text style={styles.textoBotao}>Verificar Maior Força</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -62,17 +68,17 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     justifyContent: "center", 
-    alignItems: "flex-start", // Alinha à esquerda para o texto maior ter espaço para crescer
-    paddingLeft: 40,          // Dá um espaçamento da borda esquerda da tela
-    backgroundColor: "#121212" // Fundo escuro para destacar as cores neon dos eixos
+    alignItems: "flex-start", 
+    paddingLeft: 40,          
+    backgroundColor: "#121212" 
   },
   titulo: { 
     fontSize: 24, 
     fontWeight: "bold", 
     marginBottom: 30,
     color: "#FFFFFF",
-    alignSelf: "center",      // Mantém apenas o título centralizado na tela
-    right: 20                 // Ajusta o centro por conta do paddingLeft do container
+    alignSelf: "center",      
+    right: 20                 
   },
   eixoX: { 
     fontSize: 20, 
@@ -89,10 +95,23 @@ const styles = StyleSheet.create({
     color: "#FFF000",
     marginVertical: 12
   },
-  
-  // --- INDICADOR VISUAL DE DESTAQUE ---
   destaque: {
-    fontSize: 32,          // Aumenta o tamanho da fonte significativamente
-    fontWeight: "bold",    // Deixa o texto em negrito
+    fontSize: 32,          
+    fontWeight: "bold",    
+  },
+  // Corrigido o nome e adicionada a vírgula que faltava acima
+  botao: {
+    backgroundColor: "#007BFF", 
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 30,             
+    alignSelf: "center",       
+    right: 20                  
+  },
+  textoBotao: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold"
   }
 });
